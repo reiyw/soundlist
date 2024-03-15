@@ -1,0 +1,6 @@
+.env
+secret.yaml
+/target
+/dist
+/out
+credentials.json
