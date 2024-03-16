@@ -42,6 +42,14 @@ class SimpleGrid {
 
         let eGridDiv: HTMLElement = <HTMLElement>document.querySelector('#myGrid');
         api = createGrid(eGridDiv, this.gridOptions);
+        setVolume();
+
+        const moConfig = { attributes: true, childList: true, subtree: true };
+        const callback = (mutationsList, observer) => {
+            setVolume();
+        };
+        const observer = new MutationObserver(callback);
+        observer.observe(eGridDiv, moConfig);
     }
 
     private createColumnDefs() {
@@ -64,6 +72,9 @@ function onFilterTextBoxChanged() {
 
 (window as any).onFilterTextBoxChanged = onFilterTextBoxChanged;
 
+/**
+ * @sideeffects Sets the volume of all audio elements on the page
+ */
 function setVolume() {
     const volume = (document.getElementById('volume') as HTMLInputElement).value;
     const audio_elems = document.getElementsByTagName('audio') as HTMLCollectionOf<HTMLAudioElement>;
