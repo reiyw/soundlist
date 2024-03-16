@@ -1,24 +1,28 @@
 import { createGrid, GridOptions, ModuleRegistry } from "@ag-grid-community/core";
 import { ClientSideRowModelModule } from "@ag-grid-community/client-side-row-model";
+import { Sounds } from "./gen/ss_pb";
+import sounds_bin from "./sounds.bin";
+
+// Ensure that this file is not tree-shaken
+sounds_bin;
 
 let data = [];
+let api;
 
-import('./path/to/' + 'my-json-file.json')
-    .then((module) => {
-        const jsonData = module.default;
-        console.log(jsonData);
-    })
-    .catch((error) => {
-        data = [
-            { make: "Toyota", model: "Celica", price: 35000 },
-            { make: "Ford", model: "Mondeo", price: 32000 },
-            { make: "Porsche", model: "Boxter", price: 72000 }
-        ];
-        console.error('Error loading JSON file:', error);
-    })
-    .finally(() => {
-        new SimpleGrid();
+fetch("sounds.bin").then(response => response.arrayBuffer()).then(buffer => {
+    const sounds = Sounds.fromBinary(new Uint8Array(buffer));
+    data = sounds.sounds.map(sound => {
+        const nanos = (sound.duration?.nanos || 0).toString();
+        return {
+            name: sound.name,
+            sources: sound.sources.join(", "),
+            duration: `${sound.duration?.seconds}.${parseInt(nanos.charAt(nanos.length - 9) || "0")}`,
+            updated: sound.created?.toDate().toLocaleDateString(),
+        };
     });
+}).finally(() => {
+    new SimpleGrid();
+});
 
 ModuleRegistry.register(ClientSideRowModelModule);
 
@@ -28,21 +32,44 @@ class SimpleGrid {
     private gridOptions: GridOptions = <GridOptions>{};
 
     constructor() {
-        console.log(data);
         this.gridOptions = {
             columnDefs: this.createColumnDefs(),
             rowData: data,
+            pagination: true,
+            rowHeight: 58,
+            enableCellTextSelection: true,
         };
 
         let eGridDiv: HTMLElement = <HTMLElement>document.querySelector('#myGrid');
-        createGrid(eGridDiv, this.gridOptions);
+        api = createGrid(eGridDiv, this.gridOptions);
     }
 
     private createColumnDefs() {
         return [
-            { headerName: "Make", field: "make" },
-            { headerName: "Model", field: "model" },
-            { headerName: "Price", field: "price" }
+            { headerName: "Name", field: "name", width: 150 },
+            { headerName: "Sources", field: "sources", width: 300, wrapText: true, autoHeight: true },
+            { headerName: "Duration", field: "duration", width: 80 },
+            { headerName: "Updated", field: "updated", width: 90 },
+            { headerName: "Player", field: "name", width: 350, cellRenderer: params => {
+                return `<audio controls preload="none" src="sound/${params.value}.mp3"></audio>`
+            }},
         ];
     }
 }
+
+function onFilterTextBoxChanged() {
+    const filter = document.getElementById('filter-text-box') as HTMLInputElement;
+    api.setGridOption('quickFilterText', filter.value);
+}
+
+(window as any).onFilterTextBoxChanged = onFilterTextBoxChanged;
+
+function setVolume() {
+    const volume = (document.getElementById('volume') as HTMLInputElement).value;
+    const audio_elems = document.getElementsByTagName('audio') as HTMLCollectionOf<HTMLAudioElement>;
+    for (const audio of audio_elems) {
+        audio.volume = parseFloat(volume);
+    }
+}
+
+(window as any).setVolume = setVolume;

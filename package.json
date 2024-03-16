@@ -11,7 +11,10 @@
   "license": "ISC",
   "dependencies": {
     "@ag-grid-community/client-side-row-model": "^31.1.1",
-    "@ag-grid-community/styles": "^31.1.1"
+    "@ag-grid-community/styles": "^31.1.1",
+    "@bufbuild/buf": "^1.30.0",
+    "@bufbuild/protobuf": "^1.8.0",
+    "@bufbuild/protoc-gen-es": "^1.8.0"
   },
   "devDependencies": {
     "css-loader": "^6.10.0",

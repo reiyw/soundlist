@@ -13,6 +13,13 @@ module.exports = {
             {
                 test: /\.(sa|sc|c)ss$/,
                 use: ["style-loader", "css-loader", "sass-loader"]
+            },
+            {
+                test: /\.bin$/,
+                type: 'asset/resource',
+                generator: {
+                    filename: '[name][ext]',
+                },
             }
         ],
     },

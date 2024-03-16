@@ -1,2 +1,11 @@
 @import '@ag-grid-community/styles/ag-grid.css';
-@import '@ag-grid-community/styles/ag-theme-alpine.css';
+@import '@ag-grid-community/styles/ag-theme-balham.css';
+
+span.ag-cell-value {
+    line-height: 1.2;
+}
+
+.ag-row .ag-cell {
+    display: flex;
+    align-items: center;
+}
