@@ -1,6 +1,10 @@
 @import '@ag-grid-community/styles/ag-grid.css';
 @import '@ag-grid-community/styles/ag-theme-balham.css';
 
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 span.ag-cell-value {
     line-height: 1.2;
 }

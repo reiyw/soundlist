@@ -26,7 +26,7 @@ fetch("sounds.bin").then(response => response.arrayBuffer()).then(buffer => {
 
 ModuleRegistry.register(ClientSideRowModelModule);
 
-import './styles.scss';
+import './styles.css';
 
 class SimpleGrid {
     private gridOptions: GridOptions = <GridOptions>{};
