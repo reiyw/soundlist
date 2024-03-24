@@ -42,6 +42,14 @@ class SimpleGrid {
 
         let eGridDiv: HTMLElement = <HTMLElement>document.querySelector('#myGrid');
         api = createGrid(eGridDiv, this.gridOptions);
+
+        let volume = localStorage.getItem('volume');
+        if (!volume) {
+            volume = '0.1';
+            localStorage.setItem('volume', volume);
+        }
+        (document.getElementById('volume') as HTMLInputElement).value = volume;
+
         setVolume();
 
         const moConfig = { attributes: true, childList: true, subtree: true };
@@ -58,9 +66,11 @@ class SimpleGrid {
             { headerName: "Sources", field: "sources", width: 300, wrapText: true, autoHeight: true },
             { headerName: "Duration", field: "duration", width: 80 },
             { headerName: "Updated", field: "updated", width: 90 },
-            { headerName: "Player", field: "name", width: 350, cellRenderer: params => {
-                return `<audio controls preload="none" src="sound/${params.value}.mp3"></audio>`
-            }},
+            {
+                headerName: "Player", field: "name", width: 350, cellRenderer: params => {
+                    return `<audio controls preload="none" src="sound/${params.value}.mp3"></audio>`
+                }
+            },
         ];
     }
 }
@@ -84,3 +94,11 @@ function setVolume() {
 }
 
 (window as any).setVolume = setVolume;
+
+function changeVolume() {
+    const volume = (document.getElementById('volume') as HTMLInputElement).value;
+    localStorage.setItem('volume', volume);
+    setVolume();
+}
+
+(window as any).changeVolume = changeVolume;
