@@ -20,6 +20,8 @@ fetch("sounds.bin").then(response => response.arrayBuffer()).then(buffer => {
             updated: sound.created?.toDate().toLocaleDateString(),
         };
     });
+    const ne = str => str.replace(/\d+/g, n => n.padStart(3, "0"));
+    data.sort((a, b) => ne(a.name).localeCompare(ne(b.name), undefined, { numeric: true, sensitivity: "base" }));
 }).finally(() => {
     new SimpleGrid();
 });
@@ -61,13 +63,14 @@ class SimpleGrid {
     }
 
     private createColumnDefs() {
+        const ne = str => str.replace(/\d+/g, n => n.padStart(3, "0"));
         return [
-            { headerName: "Name", field: "name", width: 150 },
+            { headerName: "Name", field: "name", width: 150, comparator: (a, b) => ne(a).localeCompare(ne(b), undefined, { numeric: true, sensitivity: "base" }) },
             { headerName: "Sources", field: "sources", width: 300, wrapText: true, autoHeight: true },
-            { headerName: "Duration", field: "duration", width: 80 },
-            { headerName: "Updated", field: "updated", width: 90 },
+            { headerName: "Duration", field: "duration", width: 80, comparator: (a, b) => parseFloat(a) - parseFloat(b) },
+            { headerName: "Updated", field: "updated", width: 90, comparator: (a, b) => new Date(a).getTime() - new Date(b).getTime() },
             {
-                headerName: "Player", field: "name", width: 350, cellRenderer: params => {
+                headerName: "Player", field: "name", width: 350, sortable: false, cellRenderer: params => {
                     return `<audio controls preload="none" src="sound/${params.value}.mp3"></audio>`
                 }
             },
